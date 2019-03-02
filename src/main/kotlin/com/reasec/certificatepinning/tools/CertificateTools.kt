@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.reasec.tools
+package com.reasec.certificatepinning.tools
 
 import java.security.MessageDigest
 import java.security.cert.X509Certificate

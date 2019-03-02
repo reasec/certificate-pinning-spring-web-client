@@ -17,7 +17,7 @@
 package com.reasec.certificatepinning.trustmanager
 
 import com.reasec.certificatepinning.exceptions.CertificatePinningException
-import com.reasec.tools.CertificateTools
+import com.reasec.certificatepinning.tools.CertificateTools
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.TrustManager

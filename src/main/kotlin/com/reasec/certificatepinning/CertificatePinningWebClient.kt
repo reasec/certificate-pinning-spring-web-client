@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.reasec
+package com.reasec.certificatepinning
 
 import com.reasec.certificatepinning.connector.CertificatePinningConnector
 import org.springframework.web.reactive.function.client.WebClient

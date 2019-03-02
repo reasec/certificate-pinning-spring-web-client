@@ -16,9 +16,8 @@
 
 package com.reasec.certificatepinning
 
-import com.reasec.CertificatePinningWebClient
 import com.reasec.certificatepinning.exceptions.CertificatePinningException
-import com.reasec.tools.CertificateTools
+import com.reasec.certificatepinning.tools.CertificateTools
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.BeforeClass
 import org.junit.Test

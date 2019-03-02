@@ -82,9 +82,14 @@ class CertificatePinningWebClientTest {
         .expectNext()
         .expectErrorSatisfies {
           assertThat(it).isInstanceOf(SSLHandshakeException::class.java)
-          assertThat(it.cause).isInstanceOf(SSLHandshakeException::class.java)
-          assertThat(it.cause?.cause).isInstanceOf(CertificateException::class.java)
-          assertThat(it.cause?.cause?.cause).isInstanceOf(CertificatePinningException::class.java)
+          assertThat(it.cause).hasCauseInstanceOf(CertificateException::class.java)
+          assertThat(it.cause?.cause).hasCauseInstanceOf(CertificatePinningException::class.java)
         }.verify()
+  }
+
+  @Test
+  fun `we could create a instance of our object`(){
+    val certificatePinningWebClient : CertificatePinningWebClient?= CertificatePinningWebClient()
+    assertThat(certificatePinningWebClient).isNotNull
   }
 }

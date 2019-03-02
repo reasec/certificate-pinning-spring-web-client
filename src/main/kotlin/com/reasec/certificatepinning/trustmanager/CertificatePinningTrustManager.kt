@@ -26,11 +26,7 @@ import javax.net.ssl.X509TrustManager
 class CertificatePinningTrustManager(private val publicKeySha: String, private val trustManagers: Array<TrustManager>) : X509TrustManager {
   @Throws(CertificateException::class)
   override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
-    trustManagers.toList().forEach {
-      if (it is X509TrustManager) {
-        it.checkClientTrusted(chain, authType)
-      }
-    }
+    throw CertificateException(UnsupportedOperationException())
   }
 
   @Throws(CertificateException::class)
@@ -54,10 +50,16 @@ class CertificatePinningTrustManager(private val publicKeySha: String, private v
   }
 
   override fun getAcceptedIssuers(): Array<X509Certificate?> {
-    return trustManagers.filter {
+    val arrayOfX509Certificates = ArrayList<X509Certificate?>()
+
+    trustManagers.filter {
       it is X509TrustManager
-    }.map {
-      (it as X509TrustManager).acceptedIssuers as X509Certificate?
-    }.toTypedArray()
+    }.forEach { manager ->
+      (manager as X509TrustManager).acceptedIssuers.forEach {
+        arrayOfX509Certificates.add(it)
+      }
+    }
+
+    return arrayOfX509Certificates.toTypedArray()
   }
 }

@@ -72,9 +72,6 @@ class CertificatePinningWebClientTest {
           assertThat(it.statusCode()).isEqualTo(HttpStatus.OK)
         }
         .verifyComplete()
-
-    val clientResponse = webClient.get().exchange().block()!!
-    assertThat(clientResponse.statusCode()).isEqualTo(HttpStatus.OK)
   }
 
   @Test

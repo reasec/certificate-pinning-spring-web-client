@@ -39,7 +39,6 @@ class CertificateTools {
       return String(hexChars)
     }
 
-
     @Synchronized
     private fun getSha256(bytes: ByteArray): ByteArray {
       return sha256md.digest(bytes)
@@ -51,6 +50,5 @@ class CertificateTools {
       val sha = getSha256(encoded)
       return encodeToHex(sha)
     }
-
   }
 }

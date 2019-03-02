@@ -21,7 +21,6 @@ import io.netty.handler.ssl.SslContextBuilder
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import reactor.netty.http.client.HttpClient
 
-
 class CertificatePinningConnector(publicKeySha: String) : ReactorClientHttpConnector(newSecureClient(publicKeySha)) {
   companion object {
     fun newSecureClient(publicKeySha: String): HttpClient {

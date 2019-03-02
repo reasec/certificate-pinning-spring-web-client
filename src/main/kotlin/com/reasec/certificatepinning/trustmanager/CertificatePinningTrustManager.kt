@@ -23,7 +23,6 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-
 class CertificatePinningTrustManager(private val publicKeySha: String, private val trustManagers: Array<TrustManager>) : X509TrustManager {
   @Throws(CertificateException::class)
   override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
@@ -34,7 +33,6 @@ class CertificatePinningTrustManager(private val publicKeySha: String, private v
     }
   }
 
-
   @Throws(CertificateException::class)
   override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
     trustManagers.toList().forEach {
@@ -43,18 +41,17 @@ class CertificatePinningTrustManager(private val publicKeySha: String, private v
       }
     }
     if (chain != null && chain.isNotEmpty()) {
-      pingRootCertificate(chain[0])
+      pingCertificate(chain[0])
     }
   }
 
   @Throws(CertificateException::class)
-  fun pingRootCertificate(certificate: X509Certificate) {
-    val certificatePublicKeyHash = CertificateTools.getPublicKeySha(certificate)
-    if (certificatePublicKeyHash != publicKeySha) {
+  fun pingCertificate(certificate: X509Certificate) {
+    val certificatePublicKeySha = CertificateTools.getPublicKeySha(certificate)
+    if (certificatePublicKeySha != publicKeySha) {
       throw CertificateException(CertificatePinningException("public keys sha do not match"))
     }
   }
-
 
   override fun getAcceptedIssuers(): Array<X509Certificate?> {
     return trustManagers.filter {

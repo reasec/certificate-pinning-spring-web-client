@@ -23,7 +23,6 @@ import javax.net.ssl.TrustManager
 import javax.net.ssl.TrustManagerFactory
 
 class CertificatePinningTrustManagerFactory(publicKeySha: String) : SimpleTrustManagerFactory() {
-
   private val defaultTrustManager: TrustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
   private val certificatePinningTrustManager: CertificatePinningTrustManager
 

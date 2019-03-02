@@ -39,14 +39,14 @@ class CertificatePinningWebClientTest {
 
   companion object {
     const val GOOGLE_URL = "https://www.google.com"
-    lateinit var googlePublicKeyHash: String
     const val INVALID_SHA = "7F:22:F8:91:B5:9F:EB:99:0E:81:A9:E7:FE:47:C5:77:54:E3:11:73:D6:48:64:F4:1C:6B:CC:2F:44:0D:49:E3"
+    lateinit var googlePublicKeySha: String
 
     @BeforeClass
     @JvmStatic
     fun setup() {
       val googleCertificate = getCertificate(GOOGLE_URL)
-      googlePublicKeyHash = CertificateTools.getPublicKeySha(googleCertificate)
+      googlePublicKeySha = CertificateTools.getPublicKeySha(googleCertificate)
     }
 
     private fun getCertificate(uri: String): X509Certificate {
@@ -60,10 +60,9 @@ class CertificatePinningWebClientTest {
     }
   }
 
-
   @Test
-  fun `we should match google public key hash`() {
-    val webClient = CertificatePinningWebClient.builder(googlePublicKeyHash)
+  fun `we should match google public key sha`() {
+    val webClient = CertificatePinningWebClient.builder(googlePublicKeySha)
         .baseUrl(GOOGLE_URL)
         .build()
 
@@ -75,7 +74,7 @@ class CertificatePinningWebClientTest {
   }
 
   @Test
-  fun `we should not match google public key hash`() {
+  fun `we should not match google public key sha`() {
     val webClient = CertificatePinningWebClient.builder(INVALID_SHA)
         .baseUrl(GOOGLE_URL)
         .build()
@@ -87,8 +86,6 @@ class CertificatePinningWebClientTest {
           assertThat(it.cause).isInstanceOf(SSLHandshakeException::class.java)
           assertThat(it.cause?.cause).isInstanceOf(CertificateException::class.java)
           assertThat(it.cause?.cause?.cause).isInstanceOf(CertificatePinningException::class.java)
-        }
-        .verify()
-
+        }.verify()
   }
 }

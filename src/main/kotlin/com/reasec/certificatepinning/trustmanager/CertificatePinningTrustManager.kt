@@ -1,0 +1,66 @@
+/*
+ * Copyright 2019 The ReaSec project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.reasec.certificatepinning.trustmanager
+
+import com.reasec.certificatepinning.exceptions.CertificatePinningException
+import com.reasec.tools.CertificateTools
+import java.security.cert.CertificateException
+import java.security.cert.X509Certificate
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+
+
+class CertificatePinningTrustManager(private val publicKeySha: String, private val trustManagers: Array<TrustManager>) : X509TrustManager {
+  @Throws(CertificateException::class)
+  override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
+    trustManagers.toList().forEach {
+      if (it is X509TrustManager) {
+        it.checkClientTrusted(chain, authType)
+      }
+    }
+  }
+
+
+  @Throws(CertificateException::class)
+  override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+    trustManagers.toList().forEach {
+      if (it is X509TrustManager) {
+        it.checkServerTrusted(chain, authType)
+      }
+    }
+    if (chain != null && chain.isNotEmpty()) {
+      pingRootCertificate(chain[0])
+    }
+  }
+
+  @Throws(CertificateException::class)
+  fun pingRootCertificate(certificate: X509Certificate) {
+    val certificatePublicKeyHash = CertificateTools.getPublicKeySha(certificate)
+    if (certificatePublicKeyHash != publicKeySha) {
+      throw CertificateException(CertificatePinningException("public keys sha do not match"))
+    }
+  }
+
+
+  override fun getAcceptedIssuers(): Array<X509Certificate?> {
+    return trustManagers.filter {
+      it is X509TrustManager
+    }.map {
+      (it as X509TrustManager).acceptedIssuers as X509Certificate?
+    }.toTypedArray()
+  }
+}

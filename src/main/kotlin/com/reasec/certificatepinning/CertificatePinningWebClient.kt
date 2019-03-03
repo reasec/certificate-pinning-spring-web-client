@@ -21,6 +21,7 @@ import org.springframework.web.reactive.function.client.WebClient
 
 class CertificatePinningWebClient {
   companion object {
+    @JvmStatic
     fun builder(publicKeySha: String): WebClient.Builder {
       return WebClient.builder().clientConnector(CertificatePinningConnector(publicKeySha))
     }

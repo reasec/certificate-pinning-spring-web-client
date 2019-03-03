@@ -61,11 +61,14 @@ class CertificatePinningWebClientTest {
 
   @Test
   fun `we should match github api public key sha`() {
+    //GIVEN
     val webClient = CertificatePinningWebClient.builder(githubApiPublicKeySha)
         .baseUrl(GITHUB_API_URL)
         .build()
 
+    //WHEN
     StepVerifier.create(webClient.get().exchange())
+        //THEN
         .assertNext {
           assertThat(it.statusCode()).isEqualTo(HttpStatus.OK)
         }
@@ -74,11 +77,14 @@ class CertificatePinningWebClientTest {
 
   @Test
   fun `we should not match github api public key sha`() {
+    //GIVEN
     val webClient = CertificatePinningWebClient.builder(INVALID_SHA)
         .baseUrl(GITHUB_API_URL)
         .build()
 
+    //WHEN
     StepVerifier.create(webClient.get().exchange())
+        //THEN
         .expectNext()
         .expectErrorSatisfies {
           assertThat(it).isInstanceOf(SSLHandshakeException::class.java)

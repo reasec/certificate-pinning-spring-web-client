@@ -44,9 +44,9 @@ If the public key sha of the certificate do not match the provided one to the cl
 
 The returned WebClient is the standard spring reactive WebClient, so you could use as you already do.
 
-This library create a custom SSLContext with an additional TrustManager that will add the pinning functionality, standard functionality of the default SSLContext and TrustManagers remains, such checkin the PIKX path and trust certificates management.
+This library create a custom [SSLContext](https://docs.oracle.com/javase/8/docs/api/javax/net/ssl/SSLContext.html) with an additional [TrustManager](https://docs.oracle.com/javase/8/docs/api/javax/net/ssl/TrustManager.html) that will add the pinning functionality, standard functionality of the default [SSLContext](https://docs.oracle.com/javase/8/docs/api/javax/net/ssl/SSLContext.html) and [TrustManager](https://docs.oracle.com/javase/8/docs/api/javax/net/ssl/TrustManager.html) remains, such checkin the PIKX path and trust certificates management.
 
-Since this is handle in the SSLContext and TrustManager, ssl handshake we will aborted if the pinning do not match avoiding additional conversation with the destination server.
+Since this is handle in the [SSLContext](https://docs.oracle.com/javase/8/docs/api/javax/net/ssl/SSLContext.html) and [TrustManager](https://docs.oracle.com/javase/8/docs/api/javax/net/ssl/TrustManager.html) the [SSL Handshake](https://medium.com/@kasunpdh/ssl-handshake-explained-4dabb87cdce) we will aborted if the pinning do not match avoiding additional conversation with the destination server.
 
 ## Tools
 
@@ -65,7 +65,7 @@ $ javac PublicKeySha.java
 - Running the tool
 
 ```bash
-$ javac PublicKeySha  https://www.site.com
+$ java PublicKeySha  https://www.site.com
 
 Getting public key sha for: https://www.site.com
 sha: 7A:5C:EC:30:0E:B0:42:6E:F9:2E:B7:8A:FA:9A:F6:28:1E:0C:FB:9F:86:A5:3D:45:75:24:86:8B:56:F2:67:B3
@@ -76,3 +76,7 @@ sha: 7A:5C:EC:30:0E:B0:42:6E:F9:2E:B7:8A:FA:9A:F6:28:1E:0C:FB:9F:86:A5:3D:45:75:
 [Certificate pinning](https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning) allows us to protect our API calls from servers that are actually not the ones that we think we are talking to. This will help us to protect our applications, for example from [man in the middle attacks](https://www.owasp.org/index.php/Man-in-the-middle_attack).
 
 In this library we will ping a sha of the public key. Certificates on an external site may change, for example when expiring, but private / public keys may remain the same, and so a sha of the public key will still valid.
+
+If you are going to keep the sha of the public key of the server that you are talking to do it privately and secure. Additionally you may need to check regularly if that sha still valid, or change it when you know it will change.
+
+This library will get update eventually to support a list of valid shas, this will allow you to have different shas for different public keys in different certificates. This may be useful if the server has more than one certificate or is planning to do it so, for example when the keys are compromised or because if has a key rotation policy.

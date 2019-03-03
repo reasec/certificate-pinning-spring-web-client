@@ -14,7 +14,7 @@ Include in your pom (**warning library not yet published**)
 <dependency>
   <groupId>com.reasec</groupId>
   <artifactId>certificate-pinning-spring-web-client</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
 </dependency>
 ```
 

@@ -30,7 +30,7 @@ val webClient = CertificatePinningWebClient.builder(PUBLIC_KEY_SHA)
 // now we could do webClient.get().exchange() etc
 ```
 ### Java example
-```
+```java
 import com.reasec.certificatepinning.CertificatePinningWebClient;
 
 final WebClient webClient = CertificatePinningWebClient.builder(PUBLIC_KEY_SHA)
@@ -73,6 +73,6 @@ sha: 7A:5C:EC:30:0E:B0:42:6E:F9:2E:B7:8A:FA:9A:F6:28:1E:0C:FB:9F:86:A5:3D:45:75:
 
 ## Additional information
 
-[Certificate pinning](https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning) allows us to protect our API calls from servers that are actually not the ones that we think we are talking too. This will help us to protect our applications, for example from [man in the middle attacks](https://www.owasp.org/index.php/Man-in-the-middle_attack).
+[Certificate pinning](https://www.owasp.org/index.php/Certificate_and_Public_Key_Pinning) allows us to protect our API calls from servers that are actually not the ones that we think we are talking to. This will help us to protect our applications, for example from [man in the middle attacks](https://www.owasp.org/index.php/Man-in-the-middle_attack).
 
 In this library we will ping a sha of the public key. Certificates on an external site may change, for example when expiring, but private / public keys may remain the same, and so a sha of the public key will still valid.

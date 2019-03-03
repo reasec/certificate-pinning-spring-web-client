@@ -5,16 +5,25 @@
 
 [![License: Apache2](https://img.shields.io/badge/license-Apache%202-blue.svg)](/LICENSE)
 [![Build Status](https://travis-ci.com/reasec/certificate-pinning-spring-web-client.svg?branch=master)](https://travis-ci.com/reasec/certificate-pinning-spring-web-client)
+[![](https://jitpack.io/v/reasec/certificate-pinning-spring-web-client.svg)](https://jitpack.io/#reasec/certificate-pinning-spring-web-client)
 
 
 ## Usage
 
-Include in your pom (**warning library not yet published**)
+Include in your pom:
+
 ```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
 <dependency>
-  <groupId>com.reasec</groupId>
-  <artifactId>certificate-pinning-spring-web-client</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+    <groupId>com.github.reasec</groupId>
+    <artifactId>certificate-pinning-spring-web-client</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
 </dependency>
 ```
 

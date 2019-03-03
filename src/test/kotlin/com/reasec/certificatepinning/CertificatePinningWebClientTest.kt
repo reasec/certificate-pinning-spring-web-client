@@ -37,15 +37,15 @@ import javax.net.ssl.SSLHandshakeException
 class CertificatePinningWebClientTest {
 
   companion object {
-    const val GOOGLE_URL = "https://www.google.com"
+    const val GITHUB_API_URL = "https://api.github.com/"
     const val INVALID_SHA = "7F:22:F8:91:B5:9F:EB:99:0E:81:A9:E7:FE:47:C5:77:54:E3:11:73:D6:48:64:F4:1C:6B:CC:2F:44:0D:49:E3"
-    lateinit var googlePublicKeySha: String
+    lateinit var githubApiPublicKeySha: String
 
     @BeforeClass
     @JvmStatic
     fun setup() {
-      val googleCertificate = getCertificate(GOOGLE_URL)
-      googlePublicKeySha = CertificateTools.getPublicKeySha(googleCertificate)
+      val githubApiCertificate = getCertificate(GITHUB_API_URL)
+      githubApiPublicKeySha = CertificateTools.getPublicKeySha(githubApiCertificate)
     }
 
     private fun getCertificate(uri: String): X509Certificate {
@@ -60,9 +60,9 @@ class CertificatePinningWebClientTest {
   }
 
   @Test
-  fun `we should match google public key sha`() {
-    val webClient = CertificatePinningWebClient.builder(googlePublicKeySha)
-        .baseUrl(GOOGLE_URL)
+  fun `we should match github api public key sha`() {
+    val webClient = CertificatePinningWebClient.builder(githubApiPublicKeySha)
+        .baseUrl(GITHUB_API_URL)
         .build()
 
     StepVerifier.create(webClient.get().exchange())
@@ -73,9 +73,9 @@ class CertificatePinningWebClientTest {
   }
 
   @Test
-  fun `we should not match google public key sha`() {
+  fun `we should not match github api public key sha`() {
     val webClient = CertificatePinningWebClient.builder(INVALID_SHA)
-        .baseUrl(GOOGLE_URL)
+        .baseUrl(GITHUB_API_URL)
         .build()
 
     StepVerifier.create(webClient.get().exchange())

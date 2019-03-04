@@ -6,6 +6,7 @@
 [![License: Apache2](https://img.shields.io/badge/license-Apache%202-blue.svg)](/LICENSE)
 [![Build Status](https://travis-ci.com/reasec/certificate-pinning-spring-web-client.svg?branch=master)](https://travis-ci.com/reasec/certificate-pinning-spring-web-client)
 [![codecov](https://codecov.io/gh/reasec/certificate-pinning-spring-web-client/branch/master/graph/badge.svg)](https://codecov.io/gh/reasec/certificate-pinning-spring-web-client)
+[![codebeat badge](https://codebeat.co/badges/975ca4cc-6deb-4da6-8e7c-15fb89183047)](https://codebeat.co/projects/github-com-reasec-certificate-pinning-spring-web-client-master)
 [![](https://jitpack.io/v/reasec/certificate-pinning-spring-web-client.svg)](https://jitpack.io/#reasec/certificate-pinning-spring-web-client)
 
 

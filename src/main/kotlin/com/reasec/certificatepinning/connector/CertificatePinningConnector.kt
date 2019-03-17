@@ -16,16 +16,17 @@
 
 package com.reasec.certificatepinning.connector
 
+import com.reasec.certificatepinning.model.CertificatePinningSpec
 import com.reasec.certificatepinning.trustmanager.CertificatePinningTrustManagerFactory
 import io.netty.handler.ssl.SslContextBuilder
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import reactor.netty.http.client.HttpClient
 
-class CertificatePinningConnector(publicKeySha: String) : ReactorClientHttpConnector(newSecureClient(publicKeySha)) {
+class CertificatePinningConnector(spec: CertificatePinningSpec) : ReactorClientHttpConnector(newSecureClient(spec)) {
   companion object {
-    fun newSecureClient(publicKeySha: String): HttpClient {
+    fun newSecureClient(spec: CertificatePinningSpec): HttpClient {
       return HttpClient.create().secure {
-        it.sslContext(SslContextBuilder.forClient().trustManager(CertificatePinningTrustManagerFactory(publicKeySha)))
+        it.sslContext(SslContextBuilder.forClient().trustManager(CertificatePinningTrustManagerFactory(spec)))
       }
     }
   }

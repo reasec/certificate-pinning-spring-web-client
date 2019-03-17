@@ -1,5 +1,6 @@
 package com.reasec.certificatepinning.trustmanager
 
+import com.reasec.certificatepinning.model.CertificatePinningSpec
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.Test
@@ -15,7 +16,8 @@ class CertificatePinningTrustManagerTest {
   fun checkClientTrusted() {
     val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
     trustManagerFactory.init(null as KeyStore?)
-    val trustManager = CertificatePinningTrustManager("", trustManagerFactory.trustManagers)
+    val spec = CertificatePinningSpec.Builder().build()
+    val trustManager = CertificatePinningTrustManager(spec, trustManagerFactory.trustManagers)
     val certificates = arrayOf<X509Certificate>()
 
     val thrown = catchThrowable {
@@ -37,8 +39,8 @@ class CertificatePinningTrustManagerTest {
   fun getAcceptedIssuers() {
     val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
     trustManagerFactory.init(null as KeyStore?)
-    val trustManager = CertificatePinningTrustManager("", trustManagerFactory.trustManagers)
-
+    val spec = CertificatePinningSpec.Builder().build()
+    val trustManager = CertificatePinningTrustManager(spec, trustManagerFactory.trustManagers)
     val acceptedIssuers = trustManager.acceptedIssuers
     var total = 0
     trustManagerFactory.trustManagers.forEach {

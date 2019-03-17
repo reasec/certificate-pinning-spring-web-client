@@ -17,6 +17,7 @@
 package com.reasec.certificatepinning
 
 import com.reasec.certificatepinning.exceptions.CertificatePinningException
+import com.reasec.certificatepinning.model.CertificatePinningSpec
 import com.reasec.certificatepinning.tools.CertificateTools
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.BeforeClass
@@ -62,7 +63,10 @@ class CertificatePinningWebClientTest {
   @Test
   fun `we should match github api public key sha`() {
     //GIVEN
-    val webClient = CertificatePinningWebClient.builder(githubApiPublicKeySha)
+    val spec = CertificatePinningSpec.Builder()
+        .sha(githubApiPublicKeySha)
+        .build()
+    val webClient = CertificatePinningWebClient.builder(spec)
         .baseUrl(GITHUB_API_URL)
         .build()
 
@@ -78,7 +82,10 @@ class CertificatePinningWebClientTest {
   @Test
   fun `we should not match github api public key sha`() {
     //GIVEN
-    val webClient = CertificatePinningWebClient.builder(INVALID_SHA)
+    val spec = CertificatePinningSpec.Builder()
+        .sha(INVALID_SHA)
+        .build()
+    val webClient = CertificatePinningWebClient.builder(spec)
         .baseUrl(GITHUB_API_URL)
         .build()
 
@@ -94,8 +101,48 @@ class CertificatePinningWebClientTest {
   }
 
   @Test
-  fun `we could create a instance of our object`(){
-    val certificatePinningWebClient : CertificatePinningWebClient?= CertificatePinningWebClient()
+  fun `we should match github api public key sha with other sha`() {
+    //GIVEN
+    val spec = CertificatePinningSpec.Builder()
+        .sha(githubApiPublicKeySha)
+        .sha(INVALID_SHA)
+        .build()
+    val webClient = CertificatePinningWebClient.builder(spec)
+        .baseUrl(GITHUB_API_URL)
+        .build()
+
+    //WHEN
+    StepVerifier.create(webClient.get().exchange())
+        //THEN
+        .assertNext {
+          assertThat(it.statusCode()).isEqualTo(HttpStatus.OK)
+        }
+        .verifyComplete()
+  }
+
+  @Test
+  fun `we should not match github api public key sha with empty spec`() {
+    //GIVEN
+    val spec = CertificatePinningSpec.Builder()
+        .build()
+    val webClient = CertificatePinningWebClient.builder(spec)
+        .baseUrl(GITHUB_API_URL)
+        .build()
+
+    //WHEN
+    StepVerifier.create(webClient.get().exchange())
+        //THEN
+        .expectNext()
+        .expectErrorSatisfies {
+          assertThat(it).isInstanceOf(SSLHandshakeException::class.java)
+          assertThat(it.cause).hasCauseInstanceOf(CertificateException::class.java)
+          assertThat(it.cause?.cause).hasCauseInstanceOf(CertificatePinningException::class.java)
+        }.verify()
+  }
+
+  @Test
+  fun `we could create a instance of our object`() {
+    val certificatePinningWebClient: CertificatePinningWebClient? = CertificatePinningWebClient()
     assertThat(certificatePinningWebClient).isNotNull
   }
 }

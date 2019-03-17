@@ -1,5 +1,6 @@
 package com.reasec.certificatepinning.trustmanager
 
+import com.reasec.certificatepinning.model.CertificatePinningSpec
 import io.netty.handler.ssl.util.SimpleTrustManagerFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -8,13 +9,14 @@ import javax.net.ssl.ManagerFactoryParameters
 import javax.net.ssl.TrustManager
 
 
-class CertificatePinningTrustManagerFactoryTest : CertificatePinningTrustManagerFactory("", testTrustManagerFactory) {
+class CertificatePinningTrustManagerFactoryTest : CertificatePinningTrustManagerFactory(CertificatePinningSpec.Builder().build(),
+    testTrustManagerFactory) {
 
   companion object {
     val testTrustManagerFactory = TestTrustManagerFactory()
   }
 
-  class TestTrustManagerFactory: SimpleTrustManagerFactory(){
+  class TestTrustManagerFactory : SimpleTrustManagerFactory() {
     var hasEngineInitWithKeyStoreBeenCall = false
     var hasEngineInitWithParametersBeenCall = false
     var hasBeemAskToGetTrustManagers = false
@@ -32,7 +34,7 @@ class CertificatePinningTrustManagerFactoryTest : CertificatePinningTrustManager
       hasEngineInitWithParametersBeenCall = true
     }
 
-    fun reset(){
+    fun reset() {
       hasEngineInitWithKeyStoreBeenCall = false
       hasEngineInitWithParametersBeenCall = false
       hasBeemAskToGetTrustManagers = false

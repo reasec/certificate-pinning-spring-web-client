@@ -29,26 +29,62 @@ Include in your pom:
 </dependency>
 ```
 
+## Example
+
+To create our WebClient we could use the following examples:
+
 ### Kotlin example
 
 ```kotlin
 import com.reasec.certificatepinning.CertificatePinningWebClient
+import com.reasec.certificatepinning.model.CertificatePinningSpec
 
-val webClient = CertificatePinningWebClient.builder(PUBLIC_KEY_SHA)
+val spec = CertificatePinningSpec.Builder()
+        .sha(PUBLIC_KEY_SHA)
+        .build()
+        
+val webClient = CertificatePinningWebClient.builder(spec)
         .baseUrl(API_URL)
         .build()
 
 // now we could do webClient.get().exchange() etc
 ```
 ### Java example
+
 ```java
 import com.reasec.certificatepinning.CertificatePinningWebClient;
+import com.reasec.certificatepinning.model.CertificatePinningSpec;
 
-final WebClient webClient = CertificatePinningWebClient.builder(PUBLIC_KEY_SHA)
+final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
+    .sha(PUBLIC_KEY_SHA)
+    .build();
+
+final WebClient webClient = CertificatePinningWebClient.builder(spec)
         .baseUrl(API_URL)
         .build();
 
 // now we could do webClient.get().exchange() etc
+```
+
+## Working with multiple Shas
+
+If we need to work with multiple Shas we could use this examples to create the spec:
+
+### Kotlin example
+
+```kotlin
+val spec = CertificatePinningSpec.Builder()
+        .sha(PUBLIC_KEY_SHA)
+        .sha(PUBLIC_KEY_ALTERNATIVE_SHA)
+        .build()
+```
+### Java example
+
+```java
+final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
+    .sha(PUBLIC_KEY_SHA)
+    .sha(PUBLIC_KEY_ALTERNATIVE_SHA)
+    .build();
 ```
 
 If the public key sha of the certificate do not match the provided one to the client we will get an error in the Mono / Flux obtained by the webclient.
@@ -90,4 +126,4 @@ In this library we will ping a sha of the public key. Certificates on an externa
 
 If you are going to keep the sha of the public key of the server that you are talking to do it privately and secure. Additionally you may need to check regularly if that sha still valid, or change it when you know it will change.
 
-This library will get update eventually to support a list of valid shas, this will allow you to have different shas for different public keys in different certificates. This may be useful if the server has more than one certificate or is planning to do it so, for example when the keys are compromised or because if has a key rotation policy.
+This library support multiples shas, this will allow you to have different shas for different public keys in different certificates. This may be useful if the server has more than one certificate or is planning to do it so, for example when the keys are compromised or because if has a key rotation policy.

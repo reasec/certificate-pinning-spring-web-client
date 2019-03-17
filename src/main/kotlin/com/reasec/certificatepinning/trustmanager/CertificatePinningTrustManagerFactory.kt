@@ -16,23 +16,24 @@
 
 package com.reasec.certificatepinning.trustmanager
 
+import com.reasec.certificatepinning.model.CertificatePinningSpec
 import io.netty.handler.ssl.util.SimpleTrustManagerFactory
 import java.security.KeyStore
 import javax.net.ssl.ManagerFactoryParameters
 import javax.net.ssl.TrustManager
 import javax.net.ssl.TrustManagerFactory
 
-open class CertificatePinningTrustManagerFactory(publicKeySha: String,
+open class CertificatePinningTrustManagerFactory(spec: CertificatePinningSpec,
                                                  private val defaultTrustManager: TrustManagerFactory) : SimpleTrustManagerFactory() {
 
-  constructor(publicKeySha: String) :
-      this(publicKeySha, TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()))
+  constructor(spec: CertificatePinningSpec) :
+      this(spec, TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm()))
 
   private val certificatePinningTrustManager: CertificatePinningTrustManager
 
   init {
     defaultTrustManager.init(null as KeyStore?)
-    this.certificatePinningTrustManager = CertificatePinningTrustManager(publicKeySha, defaultTrustManager.trustManagers)
+    this.certificatePinningTrustManager = CertificatePinningTrustManager(spec, defaultTrustManager.trustManagers)
   }
 
   override fun engineGetTrustManagers(): Array<TrustManager> {

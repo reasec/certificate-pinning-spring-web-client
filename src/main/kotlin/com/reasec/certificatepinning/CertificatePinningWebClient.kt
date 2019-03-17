@@ -17,13 +17,14 @@
 package com.reasec.certificatepinning
 
 import com.reasec.certificatepinning.connector.CertificatePinningConnector
+import com.reasec.certificatepinning.model.CertificatePinningSpec
 import org.springframework.web.reactive.function.client.WebClient
 
 class CertificatePinningWebClient {
   companion object {
     @JvmStatic
-    fun builder(publicKeySha: String): WebClient.Builder {
-      return WebClient.builder().clientConnector(CertificatePinningConnector(publicKeySha))
+    fun builder(spec: CertificatePinningSpec): WebClient.Builder {
+      return WebClient.builder().clientConnector(CertificatePinningConnector(spec))
     }
   }
 }

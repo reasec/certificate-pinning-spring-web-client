@@ -17,6 +17,7 @@
 package com.reasec.certificatepinning;
 
 import com.reasec.certificatepinning.exceptions.CertificatePinningException;
+import com.reasec.certificatepinning.model.CertificatePinningSpec;
 import com.reasec.certificatepinning.tools.CertificateTools;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -63,7 +64,10 @@ public class JavaCertificatePinningWebClientTest {
   @Test
   public void weShouldMatchGithubApiPublicKeySha() {
     //GIVEN
-    final WebClient webClient = CertificatePinningWebClient.builder(githubApiPublicKeySha)
+    final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
+        .sha(githubApiPublicKeySha)
+        .build();
+    final WebClient webClient = CertificatePinningWebClient.builder(spec)
         .baseUrl(GITHUB_API_URL)
         .build();
     //WHEN
@@ -76,7 +80,47 @@ public class JavaCertificatePinningWebClientTest {
   @Test
   public void weShouldNotMatchGithubApiPublicKeySha() {
     //GIVEN
-    final WebClient webClient = CertificatePinningWebClient.builder(INVALID_SHA)
+    final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
+        .sha(INVALID_SHA)
+        .build();
+    final WebClient webClient = CertificatePinningWebClient.builder(spec)
+        .baseUrl(GITHUB_API_URL)
+        .build();
+
+    //WHEN
+    StepVerifier.create(webClient.get().exchange())
+        //THEN
+        .expectNext()
+        .expectErrorSatisfies(throwable -> {
+          assertThat(throwable).isInstanceOf(SSLHandshakeException.class);
+          assertThat(throwable.getCause()).hasCauseInstanceOf(CertificateException.class);
+          assertThat(throwable.getCause().getCause()).hasCauseInstanceOf(CertificatePinningException.class);
+        }).verify();
+  }
+
+  @Test
+  public void weShouldMatchGithubApiPublicKeyShaWithOtherSha() {
+    //GIVEN
+    final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
+        .sha(githubApiPublicKeySha)
+        .sha(INVALID_SHA)
+        .build();
+    final WebClient webClient = CertificatePinningWebClient.builder(spec)
+        .baseUrl(GITHUB_API_URL)
+        .build();
+    //WHEN
+    StepVerifier.create(webClient.get().exchange())
+        //THEN
+        .assertNext(clientResponse -> assertThat(clientResponse.statusCode()).isEqualTo(HttpStatus.OK))
+        .verifyComplete();
+  }
+
+  @Test
+  public void weShouldNoMatchGithubApiPublicKeyShaWithEmptySpec() {
+    //GIVEN
+    final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
+        .build();
+    final WebClient webClient = CertificatePinningWebClient.builder(spec)
         .baseUrl(GITHUB_API_URL)
         .build();
 

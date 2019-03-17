@@ -17,13 +17,14 @@
 package com.reasec.certificatepinning.trustmanager
 
 import com.reasec.certificatepinning.exceptions.CertificatePinningException
+import com.reasec.certificatepinning.model.CertificatePinningSpec
 import com.reasec.certificatepinning.tools.CertificateTools
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-class CertificatePinningTrustManager(private val publicKeySha: String, private val trustManagers: Array<TrustManager>) : X509TrustManager {
+class CertificatePinningTrustManager(private val spec: CertificatePinningSpec, private val trustManagers: Array<TrustManager>) : X509TrustManager {
   @Throws(CertificateException::class)
   override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
     throw CertificateException(UnsupportedOperationException())
@@ -44,7 +45,7 @@ class CertificatePinningTrustManager(private val publicKeySha: String, private v
   @Throws(CertificateException::class)
   fun pingCertificate(certificate: X509Certificate) {
     val certificatePublicKeySha = CertificateTools.getPublicKeySha(certificate)
-    if (certificatePublicKeySha != publicKeySha) {
+    if (!spec.isValidSha(certificatePublicKeySha)) {
       throw CertificateException(CertificatePinningException("public keys sha do not match"))
     }
   }

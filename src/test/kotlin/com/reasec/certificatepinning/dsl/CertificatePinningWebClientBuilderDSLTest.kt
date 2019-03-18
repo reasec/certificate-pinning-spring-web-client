@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package com.reasec.certificatepinning
+package com.reasec.certificatepinning.dsl
 
-import com.reasec.certificatepinning.dsl.certificatePinningSpec
 import com.reasec.certificatepinning.exception.CertificatePinningException
-import com.reasec.certificatepinning.model.CertificatePinningSpec
 import com.reasec.certificatepinning.tools.CertificateTools
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,7 +34,7 @@ import javax.net.ssl.SSLHandshakeException
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-class CertificatePinningWebClientTest {
+class CertificatePinningWebClientBuilderDSLTest {
 
   companion object {
     const val GITHUB_API_URL = "https://api.github.com/"
@@ -62,108 +60,105 @@ class CertificatePinningWebClientTest {
   }
 
   @Test
-  fun `we should match github api public key sha`() {
+  fun `we should match github api public key sha using dsl`() {
     //GIVEN
-    val spec = CertificatePinningSpec.Builder()
-        .sha(githubApiPublicKeySha)
-        .build()
-    val webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
-        .build()
+    val webClient = certificatePinningWebClientBuilder {
+      spec {
+        sha(githubApiPublicKeySha)
+      }
+    }
+    .baseUrl(GITHUB_API_URL)
+    .build()
 
     //WHEN
     StepVerifier.create(webClient.get().exchange())
         //THEN
         .assertNext {
-          assertThat(it.statusCode()).isEqualTo(HttpStatus.OK)
+          Assertions.assertThat(it.statusCode()).isEqualTo(HttpStatus.OK)
         }
         .verifyComplete()
   }
 
   @Test
-  fun `we should not match github api public key sha`() {
+  fun `we should not match github api public key sha using dsl`() {
     //GIVEN
-    val spec = CertificatePinningSpec.Builder()
-        .sha(INVALID_SHA)
-        .build()
-    val webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
-        .build()
+    val webClient = certificatePinningWebClientBuilder {
+      spec {
+        sha(INVALID_SHA)
+      }
+    }
+    .baseUrl(GITHUB_API_URL)
+    .build()
 
     //WHEN
     StepVerifier.create(webClient.get().exchange())
         //THEN
         .expectNext()
         .expectErrorSatisfies {
-          assertThat(it).isInstanceOf(SSLHandshakeException::class.java)
-          assertThat(it.cause).hasCauseInstanceOf(CertificateException::class.java)
-          assertThat(it.cause?.cause).hasCauseInstanceOf(CertificatePinningException::class.java)
+          Assertions.assertThat(it).isInstanceOf(SSLHandshakeException::class.java)
+          Assertions.assertThat(it.cause).hasCauseInstanceOf(CertificateException::class.java)
+          Assertions.assertThat(it.cause?.cause).hasCauseInstanceOf(CertificatePinningException::class.java)
         }.verify()
   }
 
   @Test
   fun `we should match github api public key sha with other sha`() {
     //GIVEN
-    val spec = CertificatePinningSpec.Builder()
-        .sha(githubApiPublicKeySha)
-        .sha(INVALID_SHA)
-        .build()
-    val webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
-        .build()
+    val webClient = certificatePinningWebClientBuilder {
+      spec {
+        sha(githubApiPublicKeySha)
+        sha(INVALID_SHA)
+      }
+    }
+    .baseUrl(GITHUB_API_URL)
+    .build()
 
     //WHEN
     StepVerifier.create(webClient.get().exchange())
         //THEN
         .assertNext {
-          assertThat(it.statusCode()).isEqualTo(HttpStatus.OK)
+          Assertions.assertThat(it.statusCode()).isEqualTo(HttpStatus.OK)
         }
         .verifyComplete()
   }
 
   @Test
-  fun `we should not match github api public key sha with empty spec`() {
+  fun `we should match with empty spec`() {
     //GIVEN
-    val spec = CertificatePinningSpec.Builder()
-        .build()
-    val webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
-        .build()
+    val webClient = certificatePinningWebClientBuilder {
+    }
+    .baseUrl(GITHUB_API_URL)
+    .build()
 
     //WHEN
     StepVerifier.create(webClient.get().exchange())
         //THEN
         .expectNext()
         .expectErrorSatisfies {
-          assertThat(it).isInstanceOf(SSLHandshakeException::class.java)
-          assertThat(it.cause).hasCauseInstanceOf(CertificateException::class.java)
-          assertThat(it.cause?.cause).hasCauseInstanceOf(CertificatePinningException::class.java)
+          Assertions.assertThat(it).isInstanceOf(SSLHandshakeException::class.java)
+          Assertions.assertThat(it.cause).hasCauseInstanceOf(CertificateException::class.java)
+          Assertions.assertThat(it.cause?.cause).hasCauseInstanceOf(CertificatePinningException::class.java)
         }.verify()
   }
 
   @Test
-  fun `we should match github api public key sha with other sha using DSL`() {
+  fun `we should match with no sha`() {
     //GIVEN
-    val spec = certificatePinningSpec {
-      sha(githubApiPublicKeySha)
-      sha(INVALID_SHA)
+    val webClient = certificatePinningWebClientBuilder {
+      spec {
+      }
     }
-    val webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
-        .build()
+    .baseUrl(GITHUB_API_URL)
+    .build()
 
     //WHEN
     StepVerifier.create(webClient.get().exchange())
         //THEN
-        .assertNext {
-          assertThat(it.statusCode()).isEqualTo(HttpStatus.OK)
-        }
-        .verifyComplete()
-  }
-
-  @Test
-  fun `we could create a instance of our object`() {
-    val certificatePinningWebClient: CertificatePinningWebClient? = CertificatePinningWebClient()
-    assertThat(certificatePinningWebClient).isNotNull
+        .expectNext()
+        .expectErrorSatisfies {
+          Assertions.assertThat(it).isInstanceOf(SSLHandshakeException::class.java)
+          Assertions.assertThat(it.cause).hasCauseInstanceOf(CertificateException::class.java)
+          Assertions.assertThat(it.cause?.cause).hasCauseInstanceOf(CertificatePinningException::class.java)
+        }.verify()
   }
 }

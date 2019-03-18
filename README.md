@@ -40,12 +40,12 @@ import com.reasec.certificatepinning.CertificatePinningWebClient
 import com.reasec.certificatepinning.model.CertificatePinningSpec
 
 val spec = CertificatePinningSpec.Builder()
-        .sha(PUBLIC_KEY_SHA)
-        .build()
+  .sha(PUBLIC_KEY_SHA)
+  .build()
         
 val webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(API_URL)
-        .build()
+  .baseUrl(API_URL)
+  .build()
 
 // now we could do webClient.get().exchange() etc
 ```
@@ -60,8 +60,8 @@ final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
     .build();
 
 final WebClient webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(API_URL)
-        .build();
+    .baseUrl(API_URL)
+    .build();
 
 // now we could do webClient.get().exchange() etc
 ```
@@ -74,17 +74,49 @@ If we need to work with multiple Shas we could use this examples to create the s
 
 ```kotlin
 val spec = CertificatePinningSpec.Builder()
-        .sha(PUBLIC_KEY_SHA)
-        .sha(PUBLIC_KEY_ALTERNATIVE_SHA)
-        .build()
+  .sha(PUBLIC_KEY_SHA)
+  .sha(PUBLIC_KEY_ALTERNATIVE_SHA)
+  .build()
 ```
 ### Java example
 
 ```java
 final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
-    .sha(PUBLIC_KEY_SHA)
-    .sha(PUBLIC_KEY_ALTERNATIVE_SHA)
-    .build();
+  .sha(PUBLIC_KEY_SHA)
+  .sha(PUBLIC_KEY_ALTERNATIVE_SHA)
+  .build();
+```
+
+## Using the Kotlin DSL
+
+We could use the Kotlin DSL to create our spec
+
+```kotlin
+val spec = certificatePinningSpec {
+  sha(PUBLIC_KEY_SHA)
+  sha(PUBLIC_KEY_ALTERNATIVE_SHA)
+}
+
+val webClient = CertificatePinningWebClient.builder(spec)
+  .baseUrl(API_URL)
+  .build()
+
+// now we could do webClient.get().exchange() etc
+```
+
+Or we could use it to create the WebClient.Builder
+
+```kotlin
+val webClient = certificatePinningWebClientBuilder {
+  spec {
+    sha(PUBLIC_KEY_SHA)
+    sha(PUBLIC_KEY_ALTERNATIVE_SHA)
+  }
+}
+.baseUrl(API_URL)
+.build()
+
+// now we could do webClient.get().exchange() etc    
 ```
 
 If the public key sha of the certificate do not match the provided one to the client we will get an error in the Mono / Flux obtained by the webclient.

@@ -16,7 +16,7 @@
 
 package com.reasec.certificatepinning;
 
-import com.reasec.certificatepinning.exceptions.CertificatePinningException;
+import com.reasec.certificatepinning.exception.CertificatePinningException;
 import com.reasec.certificatepinning.model.CertificatePinningSpec;
 import com.reasec.certificatepinning.tools.CertificateTools;
 import org.junit.BeforeClass;

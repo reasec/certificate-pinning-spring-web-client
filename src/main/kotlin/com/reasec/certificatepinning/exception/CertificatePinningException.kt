@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package com.reasec.certificatepinning.exceptions
+package com.reasec.certificatepinning.exception
 
 class CertificatePinningException(message: String) : Exception(message)

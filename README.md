@@ -25,7 +25,7 @@ Include in your pom:
 <dependency>
     <groupId>com.github.reasec</groupId>
     <artifactId>certificate-pinning-spring-web-client</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0-SNAPSHOT</version>
 </dependency>
 ```
 

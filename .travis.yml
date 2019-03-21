@@ -1,5 +1,7 @@
 language: java
-sudo: false
+sudo: true
+before_install:
+  - "keytool -importkeystore -deststorepass changeit -noprompt -destkeystore ${JAVA_HOME}/lib/security/cacerts -srckeystore src/test/resources/certificate.p12 -srcstoretype pkcs12 -srcstorepass password -alias selfsigned"
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 cache:

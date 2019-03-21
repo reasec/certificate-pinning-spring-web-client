@@ -18,57 +18,43 @@ package com.reasec.certificatepinning;
 
 import com.reasec.certificatepinning.exception.CertificatePinningException;
 import com.reasec.certificatepinning.model.CertificatePinningSpec;
-import com.reasec.certificatepinning.tools.CertificateTools;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.test.StepVerifier;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
-import java.net.URL;
-import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = RANDOM_PORT)
 public class JavaCertificatePinningWebClientTest {
 
-  private static final String GITHUB_API_URL = "https://api.github.com/";
-  private static final String INVALID_SHA = "7F:22:F8:91:B5:9F:EB:99:0E:81:A9:E7:FE:47:C5:77:54:E3:11:73:D6:48:64:F4:1C:6B:CC:2F:44:0D:49:E3";
-  private static String githubApiPublicKeySha;
+  @LocalServerPort
+  Integer port;
 
-  @BeforeClass
-  static public void setup() throws Exception {
-    final X509Certificate githubApiCertificate = getCertificate(GITHUB_API_URL);
-    githubApiPublicKeySha = CertificateTools.Companion.getPublicKeySha(githubApiCertificate);
-  }
+  @Value("${test.public-key-sha}")
+  String publicKeySha;
 
-  private static X509Certificate getCertificate(final String uri) throws Exception {
-    final URL url = new URL(uri);
-    final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-    connection.connect();
-    final Certificate[] serverCertificates = connection.getServerCertificates();
-    final X509Certificate firstCertificate = (X509Certificate) serverCertificates[0];
-    connection.disconnect();
-    return firstCertificate;
-  }
+  @Value("${test.invalid-sha}")
+  String invalidSha;
 
   @Test
-  public void weShouldMatchGithubApiPublicKeySha() {
+  public void weShouldMatchThePublicKeySha() {
     //GIVEN
     final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
-        .sha(githubApiPublicKeySha)
+        .sha(publicKeySha)
         .build();
     final WebClient webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
+        .baseUrl("https://localhost:" + port + "/test")
         .build();
     //WHEN
     StepVerifier.create(webClient.get().exchange())
@@ -78,13 +64,13 @@ public class JavaCertificatePinningWebClientTest {
   }
 
   @Test
-  public void weShouldNotMatchGithubApiPublicKeySha() {
+  public void weShouldNotMatchGThePublicKeySha() {
     //GIVEN
     final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
-        .sha(INVALID_SHA)
+        .sha(invalidSha)
         .build();
     final WebClient webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
+        .baseUrl("https://localhost:" + port + "/test")
         .build();
 
     //WHEN
@@ -99,14 +85,14 @@ public class JavaCertificatePinningWebClientTest {
   }
 
   @Test
-  public void weShouldMatchGithubApiPublicKeyShaWithOtherSha() {
+  public void weShouldMatchThePublicKeyShaWithOtherSha() {
     //GIVEN
     final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
-        .sha(githubApiPublicKeySha)
-        .sha(INVALID_SHA)
+        .sha(publicKeySha)
+        .sha(invalidSha)
         .build();
     final WebClient webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
+        .baseUrl("https://localhost:" + port + "/test")
         .build();
     //WHEN
     StepVerifier.create(webClient.get().exchange())
@@ -116,12 +102,12 @@ public class JavaCertificatePinningWebClientTest {
   }
 
   @Test
-  public void weShouldNoMatchGithubApiPublicKeyShaWithEmptySpec() {
+  public void weShouldNoMatchThePublicKeyShaWithEmptySpec() {
     //GIVEN
     final CertificatePinningSpec spec = CertificatePinningSpec.Builder()
         .build();
     final WebClient webClient = CertificatePinningWebClient.builder(spec)
-        .baseUrl(GITHUB_API_URL)
+        .baseUrl("https://localhost:" + port + "/test")
         .build();
 
     //WHEN

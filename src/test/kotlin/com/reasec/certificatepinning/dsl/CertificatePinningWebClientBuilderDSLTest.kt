@@ -17,57 +17,40 @@
 package com.reasec.certificatepinning.dsl
 
 import com.reasec.certificatepinning.exception.CertificatePinningException
-import com.reasec.certificatepinning.tools.CertificateTools
 import org.assertj.core.api.Assertions
-import org.junit.BeforeClass
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.junit4.SpringRunner
 import reactor.test.StepVerifier
-import java.net.URL
 import java.security.cert.CertificateException
-import java.security.cert.X509Certificate
-import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLHandshakeException
 
 @RunWith(SpringRunner::class)
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CertificatePinningWebClientBuilderDSLTest {
 
-  companion object {
-    const val GITHUB_API_URL = "https://api.github.com/"
-    const val INVALID_SHA = "7F:22:F8:91:B5:9F:EB:99:0E:81:A9:E7:FE:47:C5:77:54:E3:11:73:D6:48:64:F4:1C:6B:CC:2F:44:0D:49:E3"
-    lateinit var githubApiPublicKeySha: String
+  @LocalServerPort
+  lateinit var port : Number
 
-    @BeforeClass
-    @JvmStatic
-    fun setup() {
-      val githubApiCertificate = getCertificate(GITHUB_API_URL)
-      githubApiPublicKeySha = CertificateTools.getPublicKeySha(githubApiCertificate)
-    }
+  @Value("\${test.public-key-sha}")
+  lateinit var publicKeySha : String
 
-    private fun getCertificate(uri: String): X509Certificate {
-      val url = URL(uri)
-      val connection = url.openConnection() as HttpsURLConnection
-      connection.connect()
-      val serverCertificates = connection.serverCertificates
-      val firstCertificate = serverCertificates[0] as X509Certificate
-      connection.disconnect()
-      return firstCertificate
-    }
-  }
+  @Value("\${test.invalid-sha}")
+  lateinit var invalidSha : String
 
   @Test
-  fun `we should match github api public key sha using dsl`() {
+  fun `we should match the public key sha using dsl`() {
     //GIVEN
     val webClient = certificatePinningWebClientBuilder {
       spec {
-        sha(githubApiPublicKeySha)
+        sha(publicKeySha)
       }
     }
-    .baseUrl(GITHUB_API_URL)
+    .baseUrl("https://localhost:$port/test")
     .build()
 
     //WHEN
@@ -80,14 +63,14 @@ class CertificatePinningWebClientBuilderDSLTest {
   }
 
   @Test
-  fun `we should not match github api public key sha using dsl`() {
+  fun `we should not match the public key sha using dsl`() {
     //GIVEN
     val webClient = certificatePinningWebClientBuilder {
       spec {
-        sha(INVALID_SHA)
+        sha(invalidSha)
       }
     }
-    .baseUrl(GITHUB_API_URL)
+    .baseUrl("https://localhost:$port/test")
     .build()
 
     //WHEN
@@ -102,15 +85,15 @@ class CertificatePinningWebClientBuilderDSLTest {
   }
 
   @Test
-  fun `we should match github api public key sha with other sha`() {
+  fun `we should match the public key sha with other sha`() {
     //GIVEN
     val webClient = certificatePinningWebClientBuilder {
       spec {
-        sha(githubApiPublicKeySha)
-        sha(INVALID_SHA)
+        sha(publicKeySha)
+        sha(invalidSha)
       }
     }
-    .baseUrl(GITHUB_API_URL)
+    .baseUrl("https://localhost:$port/test")
     .build()
 
     //WHEN
@@ -127,7 +110,7 @@ class CertificatePinningWebClientBuilderDSLTest {
     //GIVEN
     val webClient = certificatePinningWebClientBuilder {
     }
-    .baseUrl(GITHUB_API_URL)
+    .baseUrl("https://localhost:$port/test")
     .build()
 
     //WHEN
@@ -148,7 +131,7 @@ class CertificatePinningWebClientBuilderDSLTest {
       spec {
       }
     }
-    .baseUrl(GITHUB_API_URL)
+    .baseUrl("https://localhost:$port/test")
     .build()
 
     //WHEN

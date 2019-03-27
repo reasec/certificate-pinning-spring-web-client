@@ -1,0 +1,9 @@
+server:
+  ssl:
+    key-store: "classpath:certs/certificate.p12"
+    key-store-type: PKCS12
+    key-store-password: password
+    key-alias: selfsigned
+test:
+  invalid-sha: "7F:22:F8:91:B5:9F:EB:99:0E:81:A9:E7:FE:47:C5:77:54:E3:11:73:D6:48:64:F4:1C:6B:CC:2F:44:0D:49:E3"
+  public-key-sha: "NEWPUBLICKEY"

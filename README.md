@@ -158,7 +158,7 @@ $ java PublicKeySha  public-key.pem
 Getting public key sha for: public-key.pem
 sha: B2:6A:A4:80:BC:C8:57:42:16:3B:57:3D:D4:25:C6:88:B7:4D:D4:9F:4A:4E:EE:5E:DF:D4:34:D0:33:98:3A:7F
 ```
-The pem file should be something like
+The pem file should be something like:
 
 ```
 -----BEGIN PUBLIC KEY-----
@@ -172,25 +172,25 @@ bwIDAQAB
 -----END PUBLIC KEY-----
 ```
 ## Running the tests
-The tests creates a fake https server that uses a selfsigned p12 certificate, the sha of the public key in that certificate is configure in the tets.
+The tests creates a fake https server that uses a self-signed p12 certificate, the sha of the public key in that certificate is configured in the tests.
 
-### Importing certificates
-For running the test you need to import in the java keystore the p12 that is on the src/test/resources/certs/certificate.p12, there is an script that allow to import it easily with:
+### Importing the certificate
+For running the tests you need to import in the java keystore the p12 that is on the src/test/resources/certs/certificate.p12, there is an script that allows to import it easily:
 
-***note: this require to sudo / root.***
+***note: this require sudo / root.***
 
 ```bash
-$ cd ./src/test/resources/certs
+$ cd src/test/resources/certs
 $ sudo ./import.sh
 ```
 
-### Generating certificates
+### Generating a new certificate
 You may want to generate new certificate before running the tests, there is a well a script for doing that:
 
 ***note: this require to have openssl installed.***
 
 ```bash
-$ cd ./src/test/resources/certs
+$ cd src/test/resources/certs
 $ ./gentcert.sh
 ```
 After a new certificate is generated you need to import it using the above script, the application.yml in the test folder will be updated with the new certificate public key sha.

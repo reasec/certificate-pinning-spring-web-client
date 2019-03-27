@@ -133,7 +133,7 @@ Under the [tools](/tools) directory we could find some tools, these tools do not
 
 ### PublicKeySha
 
-Use this tool to get the public key sha of a giving url, this will allow to configure the client.
+Use this tool to get the public key sha of a giving url or a pem file, this will allow to configure the client.
 
 - Compile the tool
 
@@ -141,7 +141,7 @@ Use this tool to get the public key sha of a giving url, this will allow to conf
 $ javac PublicKeySha.java
 ```
 
-- Running the tool
+- Running the tool for a url
 
 ```bash
 $ java PublicKeySha  https://www.site.com
@@ -149,6 +149,51 @@ $ java PublicKeySha  https://www.site.com
 Getting public key sha for: https://www.site.com
 sha: 7A:5C:EC:30:0E:B0:42:6E:F9:2E:B7:8A:FA:9A:F6:28:1E:0C:FB:9F:86:A5:3D:45:75:24:86:8B:56:F2:67:B3
 ```
+
+- Running the tool for a pem file
+
+```bash
+$ java PublicKeySha  public-key.pem
+
+Getting public key sha for: public-key.pem
+sha: B2:6A:A4:80:BC:C8:57:42:16:3B:57:3D:D4:25:C6:88:B7:4D:D4:9F:4A:4E:EE:5E:DF:D4:34:D0:33:98:3A:7F
+```
+The pem file should be something like
+
+```
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA498YF1O/SZUaZuqUwkU9
++oTtmarKZkxtdH412149jEX3Oror2eMeiXWgYGYBy1irCEp3fd7yjf3ZoaNBBdtv
+6+OtQbnQ5kAzw69VtdNkTaID7oCPBrk2cGqgZrpzjfxq3sJ4H/pPlOeDup/+B85O
+qacZLlN+v9IcWvnKkQBcWptDpAcHYNeSgFdEh4jdYT8r08d24qZooR02CTO5T0WF
+GF6a5/iRcrF4yPSgzsZDFqGPIGRvhrQNTchP+iYF0wcqSmpZGGOpOSK958+U2Y/8
+wi0eQCxNCPjPRiqTpPlxX5SaF87j63+lD3NaiEFrqNk+I9IEDSH4Te3crMvIbpVC
+bwIDAQAB
+-----END PUBLIC KEY-----
+```
+## Running the tests
+The tests creates a fake https server that uses a selfsigned p12 certificate, the sha of the public key in that certificate is configure in the tets.
+
+### Importing certificates
+For running the test you need to import in the java keystore the p12 that is on the src/test/resources/certs/certificate.p12, there is an script that allow to import it easily with:
+
+***note: this require to sudo / root.***
+
+```bash
+$ cd ./src/test/resources/certs
+$ sudo ./import.sh
+```
+
+### Generating certificates
+You may want to generate new certificate before running the tests, there is a well a script for doing that:
+
+***note: this require to have openssl installed.***
+
+```bash
+$ cd ./src/test/resources/certs
+$ ./gentcert.sh
+```
+After a new certificate is generated you need to import it using the above script, the application.yml in the test folder will be updated with the new certificate public key sha.
 
 ## Additional information
 
